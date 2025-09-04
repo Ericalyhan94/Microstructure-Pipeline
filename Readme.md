@@ -52,14 +52,14 @@ Segmentation_Pipeline/
 │         └──training.py
 │         └──visualization.py
 ├── scripts/
-│         └──segment_images.py
-│         └──train_test_split.py
-│         └──train.py
-│         └──visualize_results.py
-│         └──carbide_morphology.py
-│         └──size_aspect_ratio.py
+         └──segment_images.py
+         └──train_test_split.py
+         └──train.py
+         └──visualize_results.py
+         └──carbide_morphology.py
+         └──size_aspect_ratio.py
 
-
+```
 ## Getting Started
 
 ### Prerequisites
@@ -94,7 +94,6 @@ transformers==4.55.0
     ```bash
     pip install -r requirements.txt
     ```
-    *(TODO: You should create a `requirements.txt` file by running `pip freeze > requirements.txt` in your environment)*
 
 ### Data Preparation
 
@@ -126,8 +125,7 @@ To start training, run the `train.py` script:
 python src/train.py --model MatSegNet
 ```
 
--   `--config`: Path to the configuration file.
--   `--checkpoint`: Which checkpoint to load ('best' or 'newest'). The training will resume from there if a checkpoint is found.
+-   `--model`: Name of the model. It can be Segformer, Unet and MatSegNet
 
 The script will automatically handle:
 -   Loading the configuration.
