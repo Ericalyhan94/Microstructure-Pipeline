@@ -1,0 +1,7 @@
+t-statistic for carbide aspect ratios: -9.09590569301404
+p-value for carbide aspect ratios: 1.4231643965604422e-19
+Conclusion: Reject the null hypothesis. The difference between the group means is statistically significant.
+
+t-statistic for carbide sizes: 9.693123478988428
+p-value for carbide sizes: 3.3435037350860247e-22
+Conclusion: Reject the null hypothesis. The difference between the group means is statistically significant.
