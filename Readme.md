@@ -122,7 +122,7 @@ The entire training process is controlled by the `configs/MatSegNet.yaml` file. 
 To start training, run the `train.py` script:
 
 ```bash
-python src/train.py --model MatSegNet
+python scripts/train.py --model MatSegNet
 ```
 
 -   `--model`: Name of the model. It can be Segformer, Unet and MatSegNet
