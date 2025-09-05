@@ -430,7 +430,7 @@ class Trainer:
         print("Running two stage training...")
         train_fn, eval_fn = get_training_functions(self.model_name_cfg)
         
-        # MODIFICATION 1: We get the starting epoch from the loaded state.
+      
         start_epoch = self.state.epoch
         metric_name = self.state.primary_metric
 
@@ -442,7 +442,7 @@ class Trainer:
         num_epochs_stage1 = self.two_stage_cfg.get('epochs_stage1', 50)
         num_epochs_stage2 = self.two_stage_cfg.get('epochs_stage2', 50)
 
-        # --- 阶段一 ---
+
         if start_epoch < num_epochs_stage1:
             print("\n" + "="*30)
             print("  ENTERING STAGE 1: TRAINING DECODER HEAD ONLY")
@@ -457,7 +457,7 @@ class Trainer:
                 filter(lambda p: p.requires_grad, self.model.parameters()), 
                 lr=lr_stage1, **(optimizer_config.get('params') or {}))
 
-            # MODIFICATION 2: The loop starts from 'start_epoch' and goes up to 'num_epochs_stage1'.
+           
             for epoch in range(start_epoch, num_epochs_stage1):
                 print(f"\n===== Stage 1, Epoch {epoch + 1}/{num_epochs_stage1} =====")
 
@@ -471,14 +471,11 @@ class Trainer:
                 else: # Segformer
                     train_loss, train_f1, train_recall, train_accuracy = train_fn(self.model, self.train_loader, optimizer_stage1, self.scaler, self.device)
                     val_loss, val_f1, val_recall, val_accuracy = eval_fn(self.model, self.validation_loader, self.device)
-                
-                # MODIFICATION 3: Consistently update the global epoch state
+
                 self.state.epoch = epoch + 1
                 self._log_and_save(train_loss, train_f1, train_recall, train_accuracy, val_loss, val_f1, val_recall, val_accuracy)
  
-        # --- 阶段二 ---
-        # MODIFICATION 4: Update start_epoch for stage 2, ensuring it starts from the right place.
-        # This makes resuming from a checkpoint in stage 2 work correctly.
+ 
         start_epoch_stage2 = max(num_epochs_stage1, start_epoch)
 
         if start_epoch_stage2 < (num_epochs_stage1 + num_epochs_stage2):
@@ -494,13 +491,12 @@ class Trainer:
                 self.model.parameters(), 
                 lr=lr_stage2, **(optimizer_config.get('params') or {}))
 
-            # MODIFICATION 5: The loop starts from the correct total epoch number.
             for epoch in range(start_epoch_stage2, num_epochs_stage1 + num_epochs_stage2):
                 relative_epoch_stage2 = epoch - num_epochs_stage1 + 1
                 print(f"\n===== Stage 2, Epoch {relative_epoch_stage2}/{num_epochs_stage2} (Total Epoch: {epoch + 1}) =====")
 
                 if self.model_name_cfg == "Unet":
-                    # ... (your training calls remain the same)
+             
                     train_loss, train_f1, train_recall, train_accuracy = train_fn(self.model, self.train_loader, optimizer_stage2, self.loss_fn, self.device)
                     val_loss, val_f1, val_recall, val_accuracy = eval_fn(self.model, self.validation_loader, self.loss_fn, self.device)
                 elif self.model_name_cfg == "MatSegNet":
@@ -510,7 +506,7 @@ class Trainer:
                     train_loss, train_f1, train_recall, train_accuracy = train_fn(self.model, self.train_loader, optimizer_stage2, self.scaler, self.device)
                     val_loss, val_f1, val_recall, val_accuracy = eval_fn(self.model, self.validation_loader, self.device)
 
-                # MODIFICATION 6: Consistently update the global epoch state
+           
                 self.state.epoch = epoch + 1
                 self._log_and_save(train_loss, train_f1, train_recall, train_accuracy, val_loss, val_f1, val_recall, val_accuracy)
 
@@ -520,7 +516,6 @@ class Trainer:
         """Helper function to log history and save checkpoints."""
         metric_name = self.state.primary_metric
 
-        # This function now only handles logging and saving, not epoch counting.
         self.state.history['train_loss'].append(train_loss)
         self.state.history[f'train_{metric_name}'].append(train_f1)
         self.state.history[f'train_acc'].append(train_accuracy)

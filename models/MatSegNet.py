@@ -28,12 +28,6 @@ class MatSegNet(nn.Module):
     def __init__(self, n_classes=1):
         super().__init__()
         base = models.resnet34(weights=models.ResNet34_Weights.DEFAULT)
-        print("base enc1: ",*list(base.children())[:3])
-        print("base enc2: ",*list(base.children())[3:5])
-        print("base enc3: ",list(base.children())[5])
-        print("base enc4: ",list(base.children())[6])
-        print("base enc5: ",list(base.children())[7])
-        
         self.enc1 = nn.Sequential(*list(base.children())[:3])
         self.enc2 = nn.Sequential(*list(base.children())[3:5])
         self.enc3, self.enc4, self.enc5 = list(base.children())[5], list(base.children())[6], list(base.children())[7]
@@ -45,50 +39,38 @@ class MatSegNet(nn.Module):
         self.final_mask, self.final_edge = nn.Conv2d(16, n_classes, 1), nn.Conv2d(16, 1, 1)
 
     def forward(self, x):
-        print("---shape of x: ",(x.size()))
+      
         e1 = self.enc1(x)
-        print("---shape of e1: ",(e1.size()))
+         
         e2 = self.enc2(e1)
-        print("---shape of e2: ",(e2.size()))
+    
         e3 = self.enc3(e2)
-        print("---shape of e3: ",(e3.size()))
+       
         e4 = self.enc4(e3)
-        print("---shape of e4: ",(e4.size()))
+     
         e5 = self.enc5(e4)
-        print("---shape of e5: ",(e5.size()))
+       
         
         d5 = self.up5(e5)
      
-        print("---shape of d5: ",(d5.size()))
+      
         
         d4 = self.dec4(torch.cat((self.att4(d5, e4), d5), 1))
         d4_up = self.up4(d4)
-        print("---shape of d4: ",(d4.size()))
-        print("---shape of d4_up: ",(d4_up.size()))
-        
+       
         d3 = self.dec3(torch.cat((self.att3(d4_up, e3), d4_up), 1))
         d3_up = self.up3(d3)
-        print("---shape of d3: ",(d3.size()))
-        print("---shape of d3_up: ",(d3_up.size()))
-        
+       
         
         d2 = self.dec2(torch.cat((self.att2(d3_up, e2), d3_up), 1))
         d2_up = self.up2(d2)
-        print("---shape of d2: ",(d2.size()))
-        print("---shape of d2_up: ",(d2_up.size()))
-        
+         
         d1 = self.dec1(torch.cat((self.att1(d2_up, e1), d2_up), 1))
 
-        print("---shape of d1: ",(d1.size()))
-
-        
+           
         d_out = self.final_conv(self.final_up(d1))
         
-        print("---shape of d_out: ",(d1.size()))
-        
-        print("---shape of final_mask: ",(self.final_mask(d_out).size()))
-        print("---shape of final_edge: ",(self.final_edge(d_out).size()))
-        
+  
         return self.final_mask(d_out), self.final_edge(d_out)
 
 

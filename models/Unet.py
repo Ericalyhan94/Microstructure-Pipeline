@@ -55,52 +55,43 @@ class UnetMobileNetV2(nn.Module):
 
     def forward(self, x):
         
-        print("---shape of x: ",(x.size()))
+      
         s1_out = self.encoder.s1(x)
         
-        print("---shape of s1_out: ",(s1_out.size()))
+   
         
         s2_out = self.encoder.s2(s1_out)
         
-        print("---shape of s2_out: ",(s2_out.size()))
-        
+       
         s3_out = self.encoder.s3(s2_out)
         
-        print("---shape of s2_out: ",(s3_out.size()))
-        
+         
         s4_out = self.encoder.s4(s3_out)
         
-        print("---shape of s4_out: ",(s3_out.size()))
-        
+          
         
         b_out = self.encoder.bottleneck(s4_out)
         b_out = self.bottleneck_dropout(b_out)
         
-        print("---shape of b_out: ",(b_out.size()))
+      
         
         d1_out = self.d1(b_out, s4_out)
-
-        print("---shape of d1_out: ",(d1_out.size()))
+ 
         
         d2_out = self.d2(d1_out, s3_out)
-        
-        print("---shape of d2_out: ",(d2_out.size()))
+ 
         
         
         d3_out = self.d3(d2_out, s2_out)
-        print("---shape of d3_out: ",(d3_out.size()))
-        
+  
         d4_out = self.d4(d3_out, s1_out)
-        
-        print("---shape of d4_out: ",(d4_out.size()))
+ 
         
         final_out = self.final_up(d4_out)
-        
-        print("---shape of final_out: ",(final_out.size()))
+ 
         
         outputs = self.outputs(final_out)
-        
-        print("---shape of outputs: ",(outputs.size()))
+ 
         
         return outputs
         

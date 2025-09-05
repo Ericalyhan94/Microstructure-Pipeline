@@ -329,14 +329,13 @@ def aspect_ratio_plot(aspect_ratio_data,output_dir):
  
     axes[0, 1].axvline(mean_lb, color='red', linestyle='--', linewidth=2, label=f'Mean: {mean_lb:.2f}')
     axes[0, 1].axvspan(mean_ci_lb[0], mean_ci_lb[1], color='red', alpha=0.2, label=f'Mean 95% CI: [{np.round(mean_ci_lb[0],2)}, {np.round(mean_ci_lb[1],2)}]')
-    # 绘制中位数
+  
     axes[0, 1].axvline(median_lb, color='green', linestyle=':', linewidth=2, label=f'Median: {median_lb:.2f}')
     axes[0, 1].axvspan(median_ci_lb[0], median_ci_lb[1], color='green', alpha=0.2, label=f'Median 95% CI: [{np.round(median_ci_lb[0],2)}, {np.round(median_ci_lb[1],2)}]')
 
     axes[0, 1].legend(fontsize=13)  
 
-    # (d) TM 直方图
-
+ 
     axes[1, 1].hist(data_tm, bins=np.linspace(0, 6, 20), color='hotpink',
                     edgecolor='gray', hatch='//', alpha=0.3)
     axes[1, 1].set_xlabel("Aspect ratio", fontsize=font_size)

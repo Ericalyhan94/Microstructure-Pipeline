@@ -135,7 +135,7 @@ def mask_to_edge_from_rgb_dict(mask_rgb_dict, kernel_size=3, low_thresh=50, high
         # Create a new black image to draw only the outer edges
         outer_edge_mask = np.zeros_like(edge)
         # Increase the thickness by changing the last parameter
-        cv2.drawContours(outer_edge_mask, contours, -1, (255), 2) # <-- THICKNESS CHANGED HERE
+        cv2.drawContours(outer_edge_mask, contours, -1, (255), 2)  
 
     
         # 5. Normalize and convert to tensor (1, H, W)

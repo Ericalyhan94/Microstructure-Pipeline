@@ -412,23 +412,11 @@ def display_with_colored_masks(display_list, num,prediction_folder):
     plt.close()    
 
 def colorize_mask(mask):
-    """
-    Converts a single-channel integer mask to a 3-channel RGB color mask
-    using fast, vectorized NumPy operations.
 
-    Args:
-        mask (np.ndarray or torch.Tensor): The input mask of shape [H, W] with integer class labels.
-
-    Returns:
-        np.ndarray: A colorized mask of shape [H, W, 3] with dtype=uint8.
-    """
-    # 1. Ensure the input is a NumPy array
     if torch.is_tensor(mask):
-        # Move tensor to CPU and convert to NumPy if it's a PyTorch tensor
+  
         mask = mask.cpu().numpy()
 
-    # 2. Define the color map
-    # This maps the integer class label (the key) to an RGB color (the value)
     color_map = {
         0: [216, 191, 216],  # Background
         1: [255, 255, 0],   
@@ -436,16 +424,12 @@ def colorize_mask(mask):
         25: [0, 255, 0]      # Class 25
     }
 
-    # 3. Create the output RGB image
-    # We start with a blank (black) canvas of the correct size and data type
+
     output_mask = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)
 
-    # 4. Apply the colors in a vectorized way
-    # This is the fast part. Instead of looping, we use boolean indexing.
+
     for class_id, color in color_map.items():
-        # Find all locations (pixels) where the mask has the current class_id
         locations = (mask == class_id)
-        # For all these locations, assign the corresponding color at once
         output_mask[locations] = color
 
     return output_mask
@@ -453,64 +437,41 @@ def colorize_mask(mask):
     
 
 
-def create_error_visualization_mask(pred_mask, true_mask):  #create mask 2
-    """
-    Creates a visualization mask to highlight False Positives and False Negatives.
-    This function expects single, non-batched masks that have already been
-    processed by argmax (i.e., they contain class indices).
-
-    Args:
-        pred_mask (torch.Tensor): The predicted mask, shape [H, W], with integer class labels (0, 1, ...).
-        true_mask (torch.Tensor): The ground truth mask, shape [H, W], with integer class labels.
-
-    Returns:
-        torch.Tensor: A new mask of shape [H, W] where False Positives and 
-                      False Negatives are marked with special values.
-    """
+def create_error_visualization_mask(pred_mask, true_mask):  
   
     pred_mask = pred_mask.clone().detach().long()
     true_mask = true_mask.clone().detach().long()  
 
-    # --- 1. Calculate the difference to identify error types ---
-    # We cast to float to allow for negative results (e.g., 0 - 1 = -1).
-    # A correct prediction results in a difference of 0.
     difference = pred_mask.float() - true_mask.float()
 
-    # --- 2. Identify and count errors ---
-    # False Negative (FN): Prediction is 0, Ground Truth is 1. Difference is -1.
     fn_pixels = torch.sum(difference < 0).item()
     print(f"Summation of False Negatives (FN): {fn_pixels}")
 
-    # False Positive (FP): Prediction is 1, Ground Truth is 0. Difference is +1.
     fp_pixels = torch.sum(difference > 0).item()
     print(f"Summation of False Positives (FP): {fp_pixels}")
 
     tp_pixels = torch.sum((difference == 0) & (pred_mask == 1)).item()
     print(f"Summation of True Positives (TP): {tp_pixels}")
 
-# True Negative (TN): Prediction=0, GT=0 → difference = 0 且 pred=0
+
     tn_pixels = torch.sum((difference == 0) & (pred_mask == 0)).item()
     print(f"Summation of True Negatives (TN): {tn_pixels}")
 
-    # --- 3. Create the error mask using torch.where ---
-    # torch.where(condition, value_if_true, value_if_false)
-    
-    # Define the special values for errors, making them clear constants
-    FN_MARKER = 25  # Value to assign to False Negative pixels
-    FP_MARKER = 3   # Value to assign to False Positive pixels
 
-    # Start with a copy of the original prediction. This will be our canvas.
-    # Correct predictions (0 -> 0, 1 -> 1) will be preserved unless overwritten.
+    FN_MARKER = 25  
+    FP_MARKER = 3   
+
+
     error_mask = pred_mask.clone()
 
-    # First, mark the False Negatives on our canvas
+
     error_mask = torch.where(
-        difference < 0,            # Condition: Is it a False Negative?
-        torch.tensor(FN_MARKER),   # If yes, set pixel to 25
-        error_mask                 # If no, keep the current value
+        difference < 0,           
+        torch.tensor(FN_MARKER),   
+        error_mask                 
     )
 
-    # Next, on the *result* of the previous step, mark the False Positives
+
     error_mask = torch.where(
         difference > 0,            # Condition: Is it a False Positive?
         torch.tensor(FP_MARKER),   # If yes, set pixel to 3
@@ -520,36 +481,29 @@ def create_error_visualization_mask(pred_mask, true_mask):  #create mask 2
     return error_mask
     
     
-    
-
-
-
-
-
 def save_error_map_visualizations(loader, model, model_name,device, output_path, name_prefix, resize_dim=(512, 512)):
     """
-    Generates colorized error map visualizations for an entire dataset and saves them to disk.
-    This is a memory-efficient replacement for 'save_predictions_superposition'.
+    Generates colorized error map visualizations for an entire dataset and saves them to disk
     """
     print(f"--- Preparing to save error map visualizations to: {output_path} ---")
     
-    # 1. Safely create the output directory
+ 
     if os.path.exists(output_path):
-        shutil.rmtree(output_path)  # Deletes the folder if it exists
-    os.makedirs(output_path)      # Creates a fresh folder
+        shutil.rmtree(output_path)  
+    os.makedirs(output_path)      
 
-    model.eval()  # Set the model to evaluation mode
+    model.eval()   
     sample_index = 0
     
     with torch.no_grad():
         progress_bar = tqdm(loader, desc=f"Saving '{name_prefix}' error maps")
         
-        # This time we need both the image and the ground truth mask
+ 
         for batch in progress_bar:
             images_batch = batch[0].to(device)
             masks_batch = batch[1].to(device)
             
-            # Get model predictions
+        
             outputs_batch = model(images_batch)
                           
            
@@ -573,29 +527,29 @@ def save_error_map_visualizations(loader, model, model_name,device, output_path,
                 print(pred_masks_batch.shape)
              
 
-            # Process and save each image in the batch
+    
             for i in range(images_batch.size(0)):
                 true_mask_tensor = masks_batch[i]
                 pred_mask_tensor = pred_masks_batch[i]
                 
-                # Create the error map (e.g., with values 0, 1, 3, 25)
+                
                 error_map_tensor = create_error_visualization_mask(pred_mask_tensor, true_mask_tensor)
 
-                # Colorize the error map (returns a NumPy array in RGB format)
+              
                 
                 error_map_tensor=error_map_tensor.squeeze(0)
                 colorized_error_map_rgb = colorize_mask(error_map_tensor)
                 
-                # Resize the colorized error map
+              
                 resized_error_map_rgb = cv2.resize(colorized_error_map_rgb, resize_dim, interpolation=cv2.INTER_AREA)
                 
-                # Convert from RGB to BGR for saving with OpenCV
+            
                 resized_error_map_bgr = cv2.cvtColor(resized_error_map_rgb, cv2.COLOR_RGB2BGR)
 
-                # Construct the full, safe file path
+               
                 save_path = os.path.join(output_path, f"{name_prefix}_{sample_index}.jpg")
                 
-                # Save the final image to disk
+         
                 cv2.imwrite(save_path, resized_error_map_bgr)
                 
                 sample_index += 1
@@ -614,37 +568,34 @@ def predict_and_save_folder(model, model_name, device, input_folder, output_fold
     """
     print(f"\n--- Processing folder for size analysis: {input_folder} ---")
     
-    # 1. Safely create the output directory
+
     if os.path.exists(output_folder):
         shutil.rmtree(output_folder)
     os.makedirs(output_folder)
 
-    # 2. Define a transformation pipeline just for this inference task
-    #    This should match the validation/test transform your model expects.
    
     model.eval()
     
-    # 3. Iterate through all files in the input folder
+ 
     filenames = [f for f in os.listdir(input_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.svg'))]
     inference_transform = get_val_test_transform(img_height=input_resize_dim[1], img_width=input_resize_dim[0])
     with torch.no_grad():
         for filename in tqdm(filenames, desc=f"Predicting images in {os.path.basename(input_folder)}"):
-            # Construct the full image path
+         
             img_path = os.path.join(input_folder, filename)
-            
-            # Load the image using Pillow and convert to RGB
+      
             try:
                 image = np.array(Image.open(img_path).convert("RGB"))
             except Exception as e:
                 print(f"Could not read image {filename}, skipping. Error: {e}")
                 continue
 
-            # Apply the transformations to create a tensor
+          
 
             transformed = inference_transform(image=image)
             image_tensor = transformed['image'].to(device)
             
-            # Add a batch dimension (C, H, W) -> (1, C, H, W) and run prediction
+          
             output = model(image_tensor.unsqueeze(0))
             
             if model_name=="Unet":
@@ -667,13 +618,13 @@ def predict_and_save_folder(model, model_name, device, input_folder, output_fold
 
             colorized_pred = colorize_mask(pred_mask) # Use your existing helper
             
-            # Resize to the final output dimensions
+        
             resized_output = cv2.resize(colorized_pred, output_resize_dim, interpolation=cv2.INTER_AREA)
             
-            # Convert RGB to BGR for saving with OpenCV
+            
             final_image_to_save = cv2.cvtColor(resized_output, cv2.COLOR_RGB2BGR)
             
-            # Save the final image
+     
             save_path = os.path.join(output_folder, filename)
             cv2.imwrite(save_path, final_image_to_save)
 
@@ -796,13 +747,12 @@ def plot_training_history_custom(history_dict,prediction_folder):
     ax2.tick_params(axis='both', which='major', labelsize=20, width=2.5, length=10, direction='in')
     [x.set_linewidth(1.5) for x in ax2.spines.values()]
 
-    # --- Common Legend for both plots ---
-    # The legend is added to the figure, not the individual axes, for a shared title effect.
+ 
     handles, labels = ax1.get_legend_handles_labels()
     fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.05),
                fancybox=True, shadow=True, ncol=2, fontsize=20)
 
-    plt.tight_layout(rect=[0, 0, 1, 0.95]) # Adjust layout to make space for the figure title
+    plt.tight_layout(rect=[0, 0, 1, 0.95])  
     plt.savefig(os.path.join(prediction_folder,'LossAndAccuracy.png'), dpi=300)
 
 
@@ -812,7 +762,6 @@ def save_all_predictions(loader, model, model_name,device, output_path, name_pre
     """
     Runs model predictions for an entire dataset, colorizes the masks,
     resizes them, and saves them to a specified folder.
-    This is a memory-efficient replacement for the original Keras code.
     """
     print(f"--- Preparing to save predictions to: {output_path} ---")
     
@@ -853,23 +802,23 @@ def save_all_predictions(loader, model, model_name,device, output_path, name_pre
                 pred_masks_batch=pred_masks_batch.squeeze(1)
              
 
-            # Process and save each image in the current batch
+     
             for i in range(pred_masks_batch.size(0)):
                 pred_mask_tensor = pred_masks_batch[i]
                 
-                # Colorize the mask (this returns a NumPy array in RGB format)
+       
                 colorized_pred_rgb = colorize_mask(pred_mask_tensor)
                 
-                # Resize the colorized mask
+ 
                 resized_pred_rgb = cv2.resize(colorized_pred_rgb, resize_dim, interpolation=cv2.INTER_AREA)
                 
-                # Convert from RGB (standard) to BGR for saving with OpenCV
+      
                 resized_pred_bgr = cv2.cvtColor(resized_pred_rgb, cv2.COLOR_RGB2BGR)
 
-                # Construct the full, safe file path without changing the working directory
+     
                 save_path = os.path.join(output_path, f"{name_prefix}_{sample_index}.jpg")
                 
-                # Save the final image to disk
+  
                 cv2.imwrite(save_path, resized_pred_bgr)
                 
                 sample_index += 1
