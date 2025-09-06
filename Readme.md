@@ -66,7 +66,7 @@ Segmentation_Pipeline/
 
 ### Prerequisites
 
-numpy==2.0.2 
+numpy==2.0.2
 albumentations==2.0.8
 matplotlib==3.10.5
 opencv-python-headless==4.10.0.84
