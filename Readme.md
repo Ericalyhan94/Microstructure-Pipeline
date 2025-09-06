@@ -45,12 +45,14 @@ Segmentation_Pipeline/
 │         └──unet_mobilenetv2.pth
 │   └── accuracy_output/     
 ├── src/            
-│   ├── datasets/
-│         └──preprocessing.py
-│         └──load_data.py
-│         └──checkpoints.py
-│         └──training.py
-│         └──visualization.py
+│   ├── checkpoints.py
+│   ├── load_data.py
+│   ├── morphologies.py
+│   ├── preprocessing.py
+│   ├── sizes_and_aspect_ratios.py
+│   ├── training.py
+│   ├── transform.py
+│   ├── visualization.py
 ├── scripts/
          └──segment_images.py
          └──train_test_split.py
