@@ -1,20 +1,94 @@
-# MatSegNet: An Attention U-Net for Material Segmentation
+# Deep Learning-based Image Segmentation Pipeline
 
-MatSegNet is a deep learning model designed for precise semantic segmentation of materials, particularly in scientific imaging applications like microscopy. It uses a powerful Attention U-Net architecture with a pre-trained ResNet-34 backbone to achieve high accuracy.
+## 1. Overview
 
-A key feature of MatSegNet is its multi-task learning approach, where it simultaneously predicts both the segmentation mask and the material boundaries (edges). This encourages the model to learn more robust and accurate representations, leading to sharper and more precise segmentation results.
+This project provides a complete pipeline for training and evaluating three different deep learning models (UNet, SegFormer, and MatSegNet) for an image segmentation task. The framework covers the entire workflow, from data preprocessing (image cropping and dataset splitting) to model training, prediction, post-processing, and quantitative analysis of the segmentation results.
+
+In our experiments, the MatSegNet model demonstrated superior performance, surpassing SegFormer on both `recall` and `precision` metrics.
+
+## 2. Key Features
+
+*   **Multi-Model Support**: Integrates three powerful segmentation models: UNet, SegFormer, and MatSegNet.
+*   **End-to-End Workflow**: Offers a complete solution from raw images to final quantitative analysis.
+*   **Automated Data Preparation**: Includes scripts for automated image cropping and splitting into training, validation, and test sets.
+*   **Advanced Post-processing**: Supports prediction on tiled images, merging them back to their original size, and creating visual comparisons with the source images.
+*   **Quantitative Morphological Analysis**: Performs a detailed analysis of the morphology of the predicted precipitates.
+
+## 3. Model Architectures
+
+This pipeline includes the following models:
+
+*   **UNet**: A classic and widely-used convolutional neural network with an encoder-decoder architecture, well-suited for biomedical and materials science image segmentation.
+
+*   **SegFormer**: A powerful and efficient segmentation model that leverages a Transformer-based encoder to capture global context, paired with a lightweight decoder.
+
+*   **MatSegNet**: An advanced segmentation model based on a U-Net-like architecture. It features a ResNet-34 encoder and an attention mechanism in the decoder path for enhanced performance. The implementation details are as follows:
+
+    *   **Architecture**: MatSegNet is an encoder-decoder network designed for precise semantic segmentation.
+
+    *   **Encoder Backbone**: It uses a pre-trained **ResNet-34** model as its feature extractor. By leveraging the weights from a model trained on a large-scale dataset (like ImageNet), the encoder can extract a rich hierarchy of robust features from the input images, which is crucial for distinguishing complex structures.
+
+    *   **Attention-Gated Decoder**: The decoder path implements a key innovation: **Attention Gates** (`AttentionBlock`). During the upsampling process, feature maps from the encoder path (via skip connections) are passed through an attention block along with the feature maps from the decoder. This mechanism teaches the model to focus on the most salient features and suppress irrelevant information from the skip connections, leading to more accurate and refined segmentation masks.
+
+    *   **Multi-Task Learning Head**: A unique feature of this network is its **dual-output design**. The model has two prediction heads that operate in parallel from the final decoder block:
+        1.  `final_mask`: Predicts the primary segmentation mask of the objects (e.g., precipitates).
+        2.  `final_edge`: Predicts the boundaries or edges of these objects.
+        This multi-task approach is beneficial because the edge-detection task acts as a form of regularization, forcing the model to learn more precise boundaries, which in turn improves the quality of the main segmentation mask.
+
+    *   **Code Implementation**: The architecture is implemented in PyTorch. The `MatSegNet` class combines the ResNet-34 encoder blocks (`enc1` through `enc5`) with custom `DecoderBlock` and `AttentionBlock` modules to build the complete network. The `forward` method explicitly shows the flow of data through the encoder, attention-gated skip connections, decoder, and finally to the two output heads.
+
+## 4. Pipeline Workflow
 
 
+1.  **Data Preprocessing (Cropping & Splitting)**
+    *   **Image Cropping**: Large source images are cropped into smaller patches (e.g., 512x512 pixels) for efficient model training.
+    *   **Dataset Splitting**: Patches are automatically sorted into `training`, `validation`, and `test` directories with a specified ratio (e.g., 70/15/15).
 
-## Features
+2.  **Model Training**
+    *   The UNet, SegFormer, and MatSegNet models are trained using the `training` and `validation` sets.
+    *   Training Script: `[e.g., /scripts/train.py]`
+    *   Usage: `python [e.g., /scripts/train.py] --model [unet/segformer/matsegnet]`
 
--   **Architecture**: Implements an Attention U-Net, which uses attention gates on skip connections to focus on relevant features and suppress noise.
--   **Pre-trained Backbone**: Utilizes a ResNet-34 encoder pre-trained on ImageNet for robust feature extraction (Transfer Learning).
--   **Multi-Task Learning**: Outputs both a segmentation mask and an edge prediction, improving overall boundary delineation.
--   **Configurable Training**: The entire training process is managed via a `config.yaml` file, allowing for easy experimentation with hyperparameters, loss functions, and training strategies.
--   **Two-Stage Training**: Supports an optional two-stage training strategy to first train the decoder head and then fine-tune the entire network, leading to more stable convergence.
+3.  **Prediction & Post-processing**
+    *   **Batch Prediction**: The trained model predicts segmentation masks for all image patches in the `test` set.
+    *   **Result Merging**: The individual predicted masks are stitched together to reconstruct full-sized segmentation maps corresponding to the original large images.
+    *   **Visualization**: Overlays of the merged predictions on the original images are generated for qualitative assessment.
 
-## Project Structure
+4.  **Morphological Analysis**
+    *   A quantitative analysis is performed on the final predicted precipitates.
+    *   Analysis Script: `[e.g., /scripts/analysis.py]`
+    *   Metrics include:
+        *   Number of precipitates
+        *   Area distribution and average size
+        *   Circularity or Aspect Ratio
+    *   Results are saved to `/outputs/MatSegNet_qualitative_results`.
+
+## 5. Results
+
+Performance metrics on our test set are summarized below:
+
+| Model | Precision | Recall | F1-Score |
+| :--- | :--- | :--- | :--- |
+| **MatSegNet**| **[0.93]** | **[0.91]** | **[0.92]** |
+
+The results clearly indicate that **MatSegNet** achieves the best performance in both Precision and Recall, highlighting its effectiveness for this segmentation task.
+
+## 6. How to Use
+
+1.  **Setup Environment**
+    *   Clone the repository: `git clone https://github.com/Ericalyhan94/Microstructure-Pipeline.git`
+    *   Install dependencies: `pip install -r requirements.txt`
+
+2.  **Prepare Data**
+    *   Place your original images in the `[e.g., /data/SEM_images]` directory.
+
+3.  **Run the Pipeline**
+    *   Execute preprocessing: `python [/scripts/python segment_images.py] and python [/scripts/python train_test_split.py]`
+    *   Train a model: `python [e.g., /scripts/train.py] --model matsegnet`
+    *   Run inference and post-processing: `python [e.g., python /scripts/visualize_results.py  --model MatSegNet]`
+    *   Perform analysis: `python [e.g., /scripts/carbide_morphology.py  --model MatSegNet ]` or `python [e.g., /scripts/size_aspect_ratio.py  --model MatSegNet ]`
+
+## 7. Project Structure
 
 ```
 Segmentation_Pipeline/
@@ -62,7 +136,7 @@ Segmentation_Pipeline/
          └──size_aspect_ratio.py
 
 ```
-## Getting Started
+
 
 ### Prerequisites
 
@@ -77,76 +151,6 @@ torch==2.5.1+cu121
 torchvision==0.20.1+cu121
 tqdm==4.66.5
 transformers==4.55.0
-
-### Installation
-
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/Ericalyhan94/Microstructure-Pipeline.git
-    cd MatSegNet
-    ```
-
-2.  (Recommended) Create a virtual environment:
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    ```
-
-3.  Install the required packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-### Data Preparation
-
-1.  Organize your dataset into the following structure inside the `data/datasets/` directory:
-    ```
-    datasets/
-    ├── train/
-    │   ├── images/
-    │   ├── masks/
-    │   └── edges/  <-- (Required for MatSegNet)
-    ├── validation/
-    │   ├── images/
-    │   ├── masks/
-    │   └── edges/
-    └── test/
-        ├── images/
-        ├── masks/
-        └── edges/
-    ```
-2.  Ensure that for each image, the corresponding mask and edge files share the same name.
-
-## Training
-
-The entire training process is controlled by the `configs/MatSegNet.yaml` file. You can adjust the learning rate, batch size, number of epochs, loss functions, and more within this file.
-
-To start training, run the `train.py` script:
-
-```bash
-python scripts/train.py --model MatSegNet
-```
-
--   `--model`: Name of the model. It can be Segformer, Unet and MatSegNet
-
-The script will automatically handle:
--   Loading the configuration.
--   Preparing the datasets and dataloaders.
--   Building the MatSegNet model.
--   Executing the standard or two-stage training loop.
--   Saving model checkpoints to the `outputs/checkpoints/` directory.
-
-## Results
-
-
-**Performance Metrics:**
-
-| Metric      | Value |
-| :---------- | :---- |
-| F1-Score    | 0.92  |
-| Accuracy    | 0.98  |
-| Recall      | 0.91  |
-| Precision   | 0.93  |
 
 
 ## Acknowledgements
