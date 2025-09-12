@@ -46,8 +46,8 @@ This pipeline includes the following models:
 
 2.  **Model Training**
     *   The UNet, SegFormer, and MatSegNet models are trained using the `training` and `validation` sets.
-    *   Training Script: `[e.g., /scripts/train.py]`
-    *   Usage: `python [e.g., /scripts/train.py] --model [unet/segformer/matsegnet]`
+    *   Training Script: `/scripts/train.py`
+    *   Usage: `python /scripts/train.py --model unet/segformer/matsegnet`
 
 3.  **Prediction & Post-processing**
     *   **Batch Prediction**: The trained model predicts segmentation masks for all image patches in the `test` set.
