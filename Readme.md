@@ -80,13 +80,13 @@ The results clearly indicate that **MatSegNet** achieves the best performance in
     *   Install dependencies: `pip install -r requirements.txt`
 
 2.  **Prepare Data**
-    *   Place your original images in the `[e.g., /data/SEM_images]` directory.
+    *   Place your original images in the `/data/SEM_images` directory.
 
 3.  **Run the Pipeline**
-    *   Execute preprocessing: `python [/scripts/python segment_images.py] and python [/scripts/python train_test_split.py]`
-    *   Train a model: `python [e.g., /scripts/train.py] --model matsegnet`
-    *   Run inference and post-processing: `python [e.g., python /scripts/visualize_results.py  --model MatSegNet]`
-    *   Perform analysis: `python [e.g., /scripts/carbide_morphology.py  --model MatSegNet ]` or `python [e.g., /scripts/size_aspect_ratio.py  --model MatSegNet ]`
+    *   Execute preprocessing: `python /scripts/python segment_images.py` and `python /scripts/python train_test_split.py`
+    *   Train a model: `python /scripts/train.py --model matsegnet`
+    *   Run inference and post-processing: `python /scripts/visualize_results.py  --model MatSegNet`
+    *   Perform analysis: `python /scripts/carbide_morphology.py  --model MatSegNet` or `python /scripts/size_aspect_ratio.py  --model MatSegNet`
 
 ## 7. Project Structure
 
