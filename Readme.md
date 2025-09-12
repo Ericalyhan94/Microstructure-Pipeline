@@ -56,7 +56,7 @@ This pipeline includes the following models:
 
 4.  **Morphological Analysis**
     *   A quantitative analysis is performed on the final predicted precipitates.
-    *   Analysis Script: `[e.g., /scripts/analysis.py]`
+    *   Analysis Script: `[e.g., /scripts/carbide_morphology.py]`
     *   Metrics include:
         *   Number of precipitates
         *   Area distribution and average size
@@ -69,7 +69,7 @@ Performance metrics on our test set are summarized below:
 
 | Model | Precision | Recall | F1-Score |
 | :--- | :--- | :--- | :--- |
-| **MatSegNet**| **[0.93]** | **[0.91]** | **[0.92]** |
+| **MatSegNet**| **0.93** | **0.91** | **0.92** |
 
 The results clearly indicate that **MatSegNet** achieves the best performance in both Precision and Recall, highlighting its effectiveness for this segmentation task.
 
