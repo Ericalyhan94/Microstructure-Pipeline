@@ -56,7 +56,7 @@ This pipeline includes the following models:
 
 4.  **Morphological Analysis**
     *   A quantitative analysis is performed on the final predicted precipitates.
-    *   Analysis Script: `[e.g., /scripts/carbide_morphology.py]`
+    *   Analysis Script: `/scripts/carbide_morphology.py`
     *   Metrics include:
         *   Number of precipitates
         *   Area distribution and average size
