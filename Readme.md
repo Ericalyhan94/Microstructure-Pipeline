@@ -47,9 +47,9 @@ This pipeline includes the following models:
     *   The UNet, SegFormer, and MatSegNet models are trained using the `training` and `validation` sets.
     *   Training Script: `/scripts/train.py`
     *   Usage:
-    *      `python ./scripts/segment_images.py`
-    *      `python ./scripts/train_test_split.py` 
-    *      `python ./scripts/train.py --model unet/segformer/matsegnet`
+    *      python ./scripts/segment_images.py
+    *      python ./scripts/train_test_split.py
+    *      python ./scripts/train.py --model unet/segformer/matsegnet
 
 3.  **Prediction & Post-processing**
     *   **Batch Prediction**: The trained model predicts segmentation masks for all image patches in the `test` set.
@@ -80,6 +80,7 @@ The results clearly indicate that **MatSegNet** achieves the best performance in
 1.  **Setup Environment**
     *   Clone the repository: `git clone https://github.com/Ericalyhan94/Microstructure-Pipeline.git`
     *   Install dependencies: `pip install -r requirements.txt`
+    *   `pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu121`
 
 2.  **Prepare Data**
     *   Place your original images in the `/data/SEM_images` directory.
