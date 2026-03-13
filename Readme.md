@@ -64,11 +64,11 @@ This pipeline includes the following models:
 
 Performance metrics on our test set are summarized below:
 
-| Model | Accuracy | Recall | Precision | F1-Score |
-| **FPN**| **0.977** | **0.843** | **0.885** | **0.864** |
-| **SegFormer**| **0.983** | **0.892** | **0.905** | **0.898** |
-| **U-Net**| **0.988** | **0.929** | **0.930** | **0.929** |
-| **MatSegNet**| **0.989** | **0.932** | **0.936** | **0.934** |
+    *| Model | Accuracy | Recall | Precision | F1-Score |
+    *| **FPN**| **0.977** | **0.843** | **0.885** | **0.864** |
+    *| **SegFormer**| **0.983** | **0.892** | **0.905** | **0.898** |
+    *| **U-Net**| **0.988** | **0.929** | **0.930** | **0.929** |
+    *| **MatSegNet**| **0.989** | **0.932** | **0.936** | **0.934** |
 
 The results clearly indicate that **MatSegNet** achieves the best performance in both Precision and Recall, highlighting its effectiveness for this segmentation task.
 
