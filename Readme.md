@@ -100,7 +100,7 @@ Segmentation_Pipeline/
 ├── data/                     
 │   ├── SEM_images/           
 │   ├── datasets/              
-│  	   └──bainite_set
+│        └──bainite_set
 │		   └──martensite_set
 │		   └──training_set
 │		   └──validation_set
