@@ -100,11 +100,11 @@ Segmentation_Pipeline/
 ├── data/                     
 │   ├── SEM_images/           
 │   ├── datasets/              
-│        └──bainite_set
-│		   └──martensite_set
-│		   └──training_set
-│		   └──validation_set
-│		   └──test_set
+│      ├──bainite_set
+│      ├──martensite_set
+│      ├──training_set
+│      ├──validation_set
+│      ├──test_set
 ├── models/   
 │   ├──MatSegNet.py
 │   ├──Segformer.py
