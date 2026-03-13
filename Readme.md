@@ -105,7 +105,8 @@ Segmentation_Pipeline/
 │      ├──training_set
 │      ├──validation_set
 │      ├──test_set
-├── models/   
+├── models/
+│   ├──FPN.py
 │   ├──MatSegNet.py
 │   ├──Segformer.py
 │   ├──Unet.py
