@@ -78,7 +78,7 @@ The results clearly indicate that **MatSegNet** achieves the best performance in
 ## 6. How to Use
 
 1.  **Setup Environment**
-    *   Clone the repository: `git clone https://github.com/Ericalyhan94/Microstructure-Pipeline.git`
+    *   Clone the repository: `git clone https://github.com/Multiscale-Simulation-Lab/MatSegNet.git`
     *   Install dependencies: `pip install -r requirements.txt`
     *   `pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu121`
 
