@@ -113,11 +113,13 @@ Segmentation_Pipeline/
 ├── output/                  
 │   ├── checkpoints/
 │         └──best_matsegnet.pth
+│         └──best_fpn.pth
 │         └──best_segformer.pth
-│         └──best_unet_mobilenetv2.pth
+│         └──best_unet_resnet34.pth
 │         └──matsegnet.pth
+│         └──fpn.pth
 │         └──segformer.pth
-│         └──unet_mobilenetv2.pth
+│         └──unet_resnet34.pth
 │   └── accuracy_output/     
 ├── src/            
 │   ├── checkpoints.py
