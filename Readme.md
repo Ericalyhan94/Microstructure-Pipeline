@@ -46,10 +46,6 @@ This pipeline includes the following models:
 2.  **Model Training**
     *   The UNet, SegFormer, and MatSegNet models are trained using the `training` and `validation` sets.
     *   Training Script: `/scripts/train.py`
-    *   Usage:
-    *      python ./scripts/segment_images.py
-    *      python ./scripts/train_test_split.py
-    *      python ./scripts/train.py --model unet/segformer/matsegnet
 
 3.  **Prediction & Post-processing**
     *   **Batch Prediction**: The trained model predicts segmentation masks for all image patches in the `test` set.
@@ -60,18 +56,19 @@ This pipeline includes the following models:
     *   A quantitative analysis is performed on the final predicted precipitates.
     *   Analysis Script: `/scripts/carbide_morphology.py`
     *   Metrics include:
-        *   Number of precipitates
         *   Area distribution and average size
         *   Circularity or Aspect Ratio
-    *   Results are saved to `/outputs/MatSegNet_qualitative_results`.
+    *   Results are saved to `/outputs/`.
 
 ## 5. Results
 
 Performance metrics on our test set are summarized below:
 
-| Model | Accuracy | Precision | Recall | F1-Score |
-
-| **MatSegNet**| **0.93** | **0.91** | **0.92** | **0.98** |
+| Model | Accuracy | Recall | Precision | F1-Score |
+| **FPN**| **0.977** | **0.843** | **0.885** | **0.864** |
+| **SegFormer**| **0.983** | **0.892** | **0.905** | **0.898** |
+| **U-Net**| **0.988** | **0.929** | **0.930** | **0.929** |
+| **MatSegNet**| **0.989** | **0.932** | **0.936** | **0.934** |
 
 The results clearly indicate that **MatSegNet** achieves the best performance in both Precision and Recall, highlighting its effectiveness for this segmentation task.
 
